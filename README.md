@@ -4,6 +4,8 @@ A sysclean wrapper with doc - MIT
 Simply call it in this way:  
 ./syscleandoc  
 <br>
+Sysclean output is the same from a while, however I tested this scripts against version 3.9 (7.7 stable)
+<br>
 Hope you can find it somewhat useful. Have fun!  
 <br>
 For any need of software additions, plugins and improvements please write to <a href="mailto:info@5mode.com">info@5mode.com</a>    

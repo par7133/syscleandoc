@@ -1,0 +1,124 @@
+#!/bin/ksh
+# This file is part of syscleandoc and is targeting primarly OpenBSD
+# Copyright 5 Mode and other contributors; Licensed MIT
+echo "This file is part of syscleandoc and is targeting primarly OpenBSD"
+echo "Copyright © 5 Mode and other contributors; Licensed MIT"
+sleep 1
+printf "."
+sleep 1
+printf "."
+sleep 1
+printf "."
+sleep 2
+
+clear
+
+if [ ! -d ".cache" ]; then
+  mkdir ".cache"
+fi
+
+local input=""
+
+if [ -e ".cache/sysclean.out" ]; then
+  echo "Sysclean output already exists, replace it [y]es or [n]o ?" 
+  read input
+  if [ $input = "y" ]; then
+    sysclean > ".cache/sysclean.out"
+  fi
+else
+  sysclean > ".cache/sysclean.out"
+fi
+
+set -A arg
+let i=0
+while read line; do
+		arg[$i]=${line}
+	  #print ${arg[$i]}
+		let i=$i+1  
+done < ".cache/sysclean.out"
+
+let i=$i-1  
+
+let y=0
+#for line in $arg
+while (( $y <= $i ))
+do
+  clear
+  echo "Found \"${arg[$y]}\". [D]oc, [s]kip or [q]uit?" 
+  read input 
+  
+  case "X$input" in
+   "XD"|"Xd")
+
+     test=`echo ${arg[$y]} | grep ^@user`
+     if [ "X$test" != "X" ]; then
+		   echo ""
+		   echo ""
+		   echo ""
+		   echo ""
+		   echo ""
+		   echo "@user doc not implemnted yet.."
+		   read input
+        
+       let y=$y+1
+       continue  
+     fi
+
+     test=`echo ${arg[$y]} | grep ^@group`
+     if [ "X$test" != "X" ]; then
+		   echo ""
+		   echo ""
+		   echo ""
+		   echo ""
+		   echo ""
+		   echo "@group doc not implemnted yet.."
+		   read input
+
+       let y=$y+1
+       continue  
+     fi
+
+     pkgpath=${arg[$y]}
+     pkgname=`echo ${arg[$y]} | egrep -o [a-z0-9.]+$ | egrep -o ^[a-z0-9]+`
+     echo "man $pkgname:"
+     echo ""
+     man -T ascii $pkgname | col -b 2>&1 #>> ".cache/$pkgname.scdoc"
+		 echo ""
+		 echo ""
+     echo "pkg_info -Q $pkgname:"
+     echo ""
+     pkg_info -Q $pkgname 2>&1 #>> ".cache/$pkgname.scdoc"
+     echo ""
+     echo ""
+     echo "ldd $pkgpath:"
+     echo ""
+     ldd $pkgpath 2>&1 #>> ".cache/$pkgname.scdoc"  
+     echo ""
+     echo ""
+     echo "pkg_check $pkgname:"
+     echo ""
+     pkgref=`ls -d /var/db/pkg/$pkgname*`
+     if [ "X$pkgref" != "X" ]; then
+       if [ -d $pkgref ]; then
+         pkg_check $pkgref 2>&1 #>> ".cache/$pkgname.scdoc" 
+       fi 
+     fi
+     echo ""
+     echo ""
+     echo ""
+     echo ""
+     echo "When ready press any key.."
+     read input
+     ;;
+   "XS"|"Xs")
+     let y=$y+1
+     continue  
+     ;; 
+   "X"|"XQ"|"Xq")
+     echo "SYSCLEANDOC done."
+     break 
+     ;; 
+  esac
+
+  let y=$y+1
+done

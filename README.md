@@ -2,7 +2,7 @@
 A sysclean wrapper with doc - MIT
 
 Simply call it in this way:  
-syscleandoc  
+./syscleandoc  
 <br>
 Hope you can find it somewhat useful. Have fun!  
 <br>

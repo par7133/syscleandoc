@@ -1,2 +1,17 @@
 # syscleandoc
 A sysclean wrapper with doc - MIT
+
+Simply call it in this way:
+syscleandoc
+<br>
+Hope you can find it somewhat useful. Have fun!  
+<br>
+For any need of software additions, plugins and improvements please write to <a href="mailto:info@5mode.com">info@5mode.com</a>    
+<br>
+To help please donate by clicking <a href="https://gaox.io/l/dona1">https://gaox.io/l/dona1</a> and filling the form.   
+<br>
+Screenshot:  
+
+<img src="screenshot1.png">
+
+Feedback: <a href="mailto:code@gaox.io">code@gaox.io</a>

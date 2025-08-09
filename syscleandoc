@@ -52,50 +52,71 @@ do
 
      test=`echo ${arg[$y]} | grep ^@user`
      if [ "X$test" != "X" ]; then
+       user=`echo ${arg[$y]} | cut -d : -f 1,1 | egrep -o "[\s\_A-Za-z0-9]+" | tail -n1`
+       echo ""
+       echo "id -Gn $user:  // Groups listing the user"
+       echo ""
+       id -Gn $user | egrep -o "[\s\_A-Za-z0-9]+"
 		   echo ""
 		   echo ""
 		   echo ""
 		   echo ""
-		   echo ""
-		   echo "@user doc not implemnted yet.."
+		   echo "When ready press any key.."
 		   read input
-        
+		   case "X$input" in
+		   "XQ"|"Xq") 
+		     echo "SYSCLEANDOC done."
+		     break 
+		     ;;
+		   esac
+		      
        let y=$y+1
        continue  
      fi
 
      test=`echo ${arg[$y]} | grep ^@group`
      if [ "X$test" != "X" ]; then
+       group=`echo ${arg[$y]} | cut -d : -f 1,1 | egrep -o "[\s\_A-Za-z0-9]+" | tail -n1`
+       echo ""
+       echo "groupinfo $group:  // Users listed inside the group"
+       echo ""
+       groupinfo $group | tail -n1 | cut -f 2 | egrep -o "[\s\_A-Za-z0-9]+"
 		   echo ""
 		   echo ""
 		   echo ""
 		   echo ""
-		   echo ""
-		   echo "@group doc not implemnted yet.."
+		   echo "When ready press any key.."
 		   read input
-
+		   case "X$input" in
+		   "XQ"|"Xq") 
+		     echo "SYSCLEANDOC done."
+		     break 
+		     ;;
+		   esac
+		      
        let y=$y+1
        continue  
      fi
 
      pkgpath=${arg[$y]}
-     pkgname=`echo ${arg[$y]} | egrep -o [a-z0-9.]+$ | egrep -o ^[a-z0-9]+`
-     echo "man $pkgname:"
+     pkgname=`echo ${arg[$y]} | egrep -o [\_A-Za-z0-9.]+$ | egrep -o ^[\_A-Za-z0-9]+`
+     echo ""
+     echo "man $pkgname:  // What man says about $pkgname"
      echo ""
      man -T ascii $pkgname | col -b 2>&1 #>> ".cache/$pkgname.scdoc"
 		 echo ""
 		 echo ""
-     echo "pkg_info -Q $pkgname:"
+     echo "pkg_info -Q $pkgname: // What pkg_info says about $pkgname"
      echo ""
      pkg_info -Q $pkgname 2>&1 #>> ".cache/$pkgname.scdoc"
      echo ""
      echo ""
-     echo "ldd $pkgpath:"
+     echo "ldd $pkgpath:  // dependecies of $pkgname"
      echo ""
      ldd $pkgpath 2>&1 #>> ".cache/$pkgname.scdoc"  
      echo ""
      echo ""
-     echo "pkg_check $pkgname:"
+     echo "pkg_check $pkgname: // What pkg db says about $pkgname"
      echo ""
      pkgref=`ls -d /var/db/pkg/$pkgname*`
      if [ "X$pkgref" != "X" ]; then
@@ -109,6 +130,12 @@ do
      echo ""
      echo "When ready press any key.."
      read input
+     case "X$input" in
+     "XQ"|"Xq") 
+       echo "SYSCLEANDOC done."
+       break 
+       ;;
+     esac
      ;;
    "XS"|"Xs")
      let y=$y+1

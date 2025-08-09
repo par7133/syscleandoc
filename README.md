@@ -1,8 +1,8 @@
 # syscleandoc
 A sysclean wrapper with doc - MIT
 
-Simply call it in this way:
-syscleandoc
+Simply call it in this way:  
+syscleandoc  
 <br>
 Hope you can find it somewhat useful. Have fun!  
 <br>

@@ -1,7 +1,9 @@
 #!/bin/ksh
 # This file is part of syscleandoc and is targeting primarly OpenBSD
+# System requirements: sysclean
 # Copyright 5 Mode and other contributors; Licensed MIT
 echo "This file is part of syscleandoc and is targeting primarly OpenBSD"
+echo "System requirements: sysclean"
 echo "Copyright © 5 Mode and other contributors; Licensed MIT"
 sleep 1
 printf "."
@@ -13,48 +15,58 @@ sleep 2
 
 clear
 
-if [ ! -d ".cache" ]; then
-  mkdir ".cache"
+if [ ! -d ".cache-syscleandoc" ]; then
+  mkdir ".cache-syscleandoc"
 fi
 
 local input=""
 
-if [ -e ".cache/sysclean.out" ]; then
-  echo "Sysclean output already exists, replace it [y]es or [n]o ?" 
+if [ -e ".cache-syscleandoc/sysclean.out" ]; then
+  echo "Sysclean output already exists, replace it (y)es or (n)o [n]?" 
   read input
-  if [ $input = "y" ]; then
-    sysclean > ".cache/sysclean.out"
-  fi
+  case "X$input" in
+  "XY"|"Xy") 
+    clear 
+    echo "loading sysclean output.." 
+    sysclean > ".cache-syscleandoc/sysclean.out"
+    break 
+    ;;
+  "X"|"XN"|"Xn") 
+    break 
+    ;;
+  esac
 else
-  sysclean > ".cache/sysclean.out"
+  echo "loading sysclean output.." 
+  sysclean > ".cache-syscleandoc/sysclean.out"
 fi
 
 set -A arg
 let i=0
 while read line; do
 		arg[$i]=${line}
-	  #print ${arg[$i]}
+	  #echo ${arg[$i]}
 		let i=$i+1  
-done < ".cache/sysclean.out"
+done < ".cache-syscleandoc/sysclean.out"
 
 let i=$i-1  
 
 let y=0
-#for line in $arg
+
 while (( $y <= $i ))
 do
   clear
-  echo "Found \"${arg[$y]}\". [D]oc, [s]kip or [q]uit?" 
+  echo "Found \"${arg[$y]}\". (D)oc, (s)kip or (q)uit [D]?" 
   read input 
   
   case "X$input" in
-   "XD"|"Xd")
+   "X"|"XD"|"Xd")
 
+     # USER
      test=`echo ${arg[$y]} | grep ^@user`
      if [ "X$test" != "X" ]; then
        user=`echo ${arg[$y]} | cut -d : -f 1,1 | egrep -o "[\s\_A-Za-z0-9]+" | tail -n1`
        echo ""
-       echo "id -Gn $user:  // Groups listing the user"
+       echo "id -Gn $user:  // Groups listing the given user"
        echo ""
        id -Gn $user | egrep -o "[\s\_A-Za-z0-9]+"
 		   echo ""
@@ -65,7 +77,6 @@ do
 		   read input
 		   case "X$input" in
 		   "XQ"|"Xq") 
-		     echo "SYSCLEANDOC done."
 		     break 
 		     ;;
 		   esac
@@ -74,11 +85,12 @@ do
        continue  
      fi
 
+     # GROUP
      test=`echo ${arg[$y]} | grep ^@group`
      if [ "X$test" != "X" ]; then
        group=`echo ${arg[$y]} | cut -d : -f 1,1 | egrep -o "[\s\_A-Za-z0-9]+" | tail -n1`
        echo ""
-       echo "groupinfo $group:  // Users listed inside the group"
+       echo "groupinfo $group:  // Users listed inside the given group"
        echo ""
        groupinfo $group | tail -n1 | cut -f 2 | egrep -o "[\s\_A-Za-z0-9]+"
 		   echo ""
@@ -89,7 +101,283 @@ do
 		   read input
 		   case "X$input" in
 		   "XQ"|"Xq") 
-		     echo "SYSCLEANDOC done."
+		     break 
+		     ;;
+		   esac
+		      
+       let y=$y+1
+       continue  
+     fi
+
+     # INCLUDE FILE 
+     test=`echo ${arg[$y]} | grep ^/usr/include`
+     if [ "X$test" != "X" ]; then
+		   echo ""
+		   echo "This is an include file."
+		   echo ""
+		   echo ""
+		   echo ""
+		   echo "When ready press any key.."
+		   read input
+		   case "X$input" in
+		   "XQ"|"Xq") 
+		     break 
+		     ;;
+		   esac
+		      
+       let y=$y+1
+       continue  
+     fi
+
+     # CALENDAR FILE 
+     test=`echo ${arg[$y]} | grep ^/usr/share/calendar`
+     if [ "X$test" != "X" ]; then
+		   echo ""
+		   echo "This is an calendar file (most probably you can skip on that)."
+		   echo ""
+		   echo ""
+		   echo ""
+		   echo "When ready press any key.."
+		   read input
+		   case "X$input" in
+		   "XQ"|"Xq") 
+		     break 
+		     ;;
+		   esac
+		      
+       let y=$y+1
+       continue  
+     fi
+
+     # XORG CONF
+     test=`echo ${arg[$y]} | grep ^/usr/X11R6/share/X11/xorg.conf.d`
+     if [ "X$test" != "X" ]; then
+		   echo ""
+		   echo "This is a configutation file of Xorg (most probably you can skip on that)."
+		   echo ""
+		   echo ""
+		   echo ""
+		   echo "When ready press any key.."
+		   read input
+		   case "X$input" in
+		   "XQ"|"Xq") 
+		     break 
+		     ;;
+		   esac
+		      
+       let y=$y+1
+       continue  
+     fi
+
+     # UNBOUND CONF
+     test=`echo ${arg[$y]} | grep ^/var/unbound/etc`
+     if [ "X$test" != "X" ]; then
+		   echo ""
+		   echo "This is a configutation file of Unbound (most probably you can skip on that)."
+		   echo ""
+		   echo ""
+		   echo ""
+		   echo "When ready press any key.."
+		   read input
+		   case "X$input" in
+		   "XQ"|"Xq") 
+		     break 
+		     ;;
+		   esac
+		      
+       let y=$y+1
+       continue  
+     fi
+
+     # UNBOUND CONF
+     test1=`echo ${arg[$y]} | grep /.conf/`
+     test2=`echo ${arg[$y]} | grep /conf.d/`
+     if [ "X$test1$test2" != "X" ]; then
+		   echo ""
+		   echo "This is a configutation file."
+		   echo ""
+		   echo ""
+		   echo ""
+		   echo "When ready press any key.."
+		   read input
+		   case "X$input" in
+		   "XQ"|"Xq") 
+		     break 
+		     ;;
+		   esac
+		      
+       let y=$y+1
+       continue  
+     fi
+
+     # WWW
+     test=`echo ${arg[$y]} | grep ^/var/www`
+     if [ "X$test" != "X" ]; then
+		   echo ""
+		   echo "This is a webserver file or directory."
+		   echo ""
+		   echo ""
+		   echo ""
+		   echo "When ready press any key.."
+		   read input
+		   case "X$input" in
+		   "XQ"|"Xq") 
+		     break 
+		     ;;
+		   esac
+		      
+       let y=$y+1
+       continue  
+     fi
+
+     # lost+found
+     test=`echo ${arg[$y]} | grep lost\+found`
+     if [ "X$test" != "X" ]; then
+		   echo ""
+		   echo "This is a lost+found file."
+		   echo ""
+		   echo ""
+		   echo ""
+		   echo "When ready press any key.."
+		   read input
+		   case "X$input" in
+		   "XQ"|"Xq") 
+		     break 
+		     ;;
+		   esac
+		      
+       let y=$y+1
+       continue  
+     fi
+
+     # ARCHIVE FILE
+     test1=`echo ${arg[$y]} | grep /.tar/$`
+     test2=`echo ${arg[$y]} | grep /.tar.gz/$`
+     test3=`echo ${arg[$y]} | grep /.tar.xz/$`
+     test4=`echo ${arg[$y]} | grep /.xz/$`
+     if [ "X$test1$test2$test3$test4" != "X" ]; then
+		   echo ""
+		   echo "This is an archive file (most probably you can skip on that)."
+		   echo ""
+		   echo ""
+		   echo ""
+		   echo "When ready press any key.."
+		   read input
+		   case "X$input" in
+		   "XQ"|"Xq") 
+		     break 
+		     ;;
+		   esac
+		      
+       let y=$y+1
+       continue  
+     fi
+
+     # dev
+     test=`echo ${arg[$y]} | grep ^/dev`
+     if [ "X$test" != "X" ]; then
+		   echo ""
+		   echo "This is a dev file."
+		   echo ""
+		   echo ""
+		   echo ""
+		   echo "When ready press any key.."
+		   read input
+		   case "X$input" in
+		   "XQ"|"Xq") 
+		     break 
+		     ;;
+		   esac
+		      
+       let y=$y+1
+       continue  
+     fi
+
+     # etc
+     test=`echo ${arg[$y]} | grep ^/etc`
+     if [ "X$test" != "X" ]; then
+		   echo ""
+		   echo "This is a system config file."
+		   echo ""
+		   echo ""
+		   echo ""
+		   echo "When ready press any key.."
+		   read input
+		   case "X$input" in
+		   "XQ"|"Xq") 
+		     break 
+		     ;;
+		   esac
+		      
+       let y=$y+1
+       continue  
+     fi
+
+     # /mnt
+     test=`echo ${arg[$y]} | grep ^/mnt`
+     if [ "X$test" != "X" ]; then
+		   echo ""
+		   echo "This is a mount (most probably you can skip on that)."
+		   echo ""
+		   echo ""
+		   echo ""
+		   echo "When ready press any key.."
+		   read input
+		   case "X$input" in
+		   "XQ"|"Xq") 
+		     break 
+		     ;;
+		   esac
+		      
+       let y=$y+1
+       continue  
+     fi
+
+     # MAN
+     test1=`echo ${arg[$y]} | grep ^/usr/share/man`
+     test2=`echo ${arg[$y]} | grep ^/usr/X11R6/man`
+     if [ "X$test1$test2" != "X" ]; then
+		   pkgpath=${arg[$y]}
+		   pkgname=`echo ${arg[$y]} | egrep -o [\_A-Za-z0-9\:\+.]+$ | egrep -o ^[\_A-Za-z0-9\:\+]+`
+		   echo ""
+		   echo "man $pkgname:  // What man says about $pkgname"
+		   echo ""
+		   man -k $pkgname | head -n10 2>&1
+			 echo ""
+			 echo ""
+		   echo "pkg_info -e $pkgname: // What pkg_info says about $pkgname"
+		   echo ""
+		   #pkg_info -Q $pkgname 2>&1
+		   pkgref1=`pkg_info -e "$pkgname->0" 2>&1 | grep inst:`
+		   pkg_info -e "$pkgname->0" 2>&1
+		   if [ "X$pkgref1" != "X" ]; then
+		     pkg_info "$pkgname" 2>&1
+		   else
+		     echo "Not formally installed."  
+		   fi
+		   echo ""
+		   echo ""
+		   echo "locate $pkgname:  // dependecies of $pkgname"
+		   echo ""
+		   locate -l 20 $pkgname | grep ^/usr 2>&1  
+		   echo ""
+		   echo ""
+		   echo "pkg_check $pkgname: // What pkg db says about $pkgname"
+		   echo ""
+		   pkgref2=`ls -d /var/db/pkg/$pkgname-*`
+		   if [ "X$pkgref2" != "X" ]; then
+		     if [ -d $pkgref2 ]; then
+		       pkg_check $pkgref2 2>&1 
+		     fi 
+		   fi
+		   echo ""
+		   echo ""
+		   echo ""
+		   echo ""
+		   echo "When ready press any key.."
+		   read input
+		   case "X$input" in
+		   "XQ"|"Xq") 
 		     break 
 		     ;;
 		   esac
@@ -99,29 +387,36 @@ do
      fi
 
      pkgpath=${arg[$y]}
-     pkgname=`echo ${arg[$y]} | egrep -o [\_A-Za-z0-9.]+$ | egrep -o ^[\_A-Za-z0-9]+`
+     pkgname=`echo ${arg[$y]} | egrep -o [\_A-Za-z0-9\:\+.]+$ | egrep -o ^[\_A-Za-z0-9\:\+]+`
      echo ""
      echo "man $pkgname:  // What man says about $pkgname"
      echo ""
-     man -T ascii $pkgname | col -b 2>&1 #>> ".cache/$pkgname.scdoc"
+     man -T ascii $pkgname | col -b | head -n50 2>&1
 		 echo ""
 		 echo ""
-     echo "pkg_info -Q $pkgname: // What pkg_info says about $pkgname"
+     echo "pkg_info -e $pkgname: // What pkg_info says about $pkgname"
      echo ""
-     pkg_info -Q $pkgname 2>&1 #>> ".cache/$pkgname.scdoc"
+     #pkg_info -Q $pkgname 2>&1
+     pkgref1=`pkg_info -e "$pkgname->0" 2>&1 | grep inst:`
+     pkg_info -e "$pkgname->0" 2>&1
+     if [ "X$pkgref1" != "X" ]; then
+       pkg_info "$pkgname" 2>&1
+     else
+       echo "Not formally installed."  
+     fi
      echo ""
      echo ""
      echo "ldd $pkgpath:  // dependecies of $pkgname"
      echo ""
-     ldd $pkgpath 2>&1 #>> ".cache/$pkgname.scdoc"  
+     ldd $pkgpath 2>&1  
      echo ""
      echo ""
      echo "pkg_check $pkgname: // What pkg db says about $pkgname"
      echo ""
-     pkgref=`ls -d /var/db/pkg/$pkgname*`
-     if [ "X$pkgref" != "X" ]; then
-       if [ -d $pkgref ]; then
-         pkg_check $pkgref 2>&1 #>> ".cache/$pkgname.scdoc" 
+     pkgref2=`ls -d /var/db/pkg/$pkgname-*`
+     if [ "X$pkgref2" != "X" ]; then
+       if [ -d $pkgref2 ]; then
+         pkg_check $pkgref2 2>&1 
        fi 
      fi
      echo ""
@@ -132,7 +427,6 @@ do
      read input
      case "X$input" in
      "XQ"|"Xq") 
-       echo "SYSCLEANDOC done."
        break 
        ;;
      esac
@@ -141,11 +435,12 @@ do
      let y=$y+1
      continue  
      ;; 
-   "X"|"XQ"|"Xq")
-     echo "SYSCLEANDOC done."
+   "XQ"|"Xq")
      break 
      ;; 
   esac
 
   let y=$y+1
 done
+
+echo "SYSCLEANDOC done."
